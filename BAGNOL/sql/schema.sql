@@ -1,0 +1,47 @@
+CREATE TABLE Roles (
+    RoleID INT PRIMARY KEY AUTO_INCREMENT,
+    RoleName VARCHAR(50) NOT NULL UNIQUE 
+);
+
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
+    Username VARCHAR(50) NOT NULL UNIQUE,
+    PasswordHash VARCHAR(255) NOT NULL, 
+    Email VARCHAR(100) NOT NULL UNIQUE,
+    RoleID INT NOT NULL,
+    FOREIGN KEY (RoleID) REFERENCES Roles(RoleID)
+);
+
+CREATE TABLE JobPosts (
+    JobPostID INT PRIMARY KEY AUTO_INCREMENT,
+    Title VARCHAR(100) NOT NULL,
+    Description TEXT NOT NULL,
+    CreatedBy INT NOT NULL, 
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (CreatedBy) REFERENCES Users(UserID)
+);
+
+CREATE TABLE Applications (
+    ApplicationID INT PRIMARY KEY AUTO_INCREMENT,
+    JobPostID INT NOT NULL,
+    ApplicantID INT NOT NULL, 
+    CoverLetter TEXT NOT NULL, 
+    ResumePath VARCHAR(255) NOT NULL, 
+    Status ENUM('Pending', 'Accepted', 'Rejected') DEFAULT 'Pending',
+    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (JobPostID) REFERENCES JobPosts(JobPostID),
+    FOREIGN KEY (ApplicantID) REFERENCES Users(UserID)
+);
+
+CREATE TABLE Messages (
+    MessageID INT PRIMARY KEY AUTO_INCREMENT,
+    SenderID INT NOT NULL, 
+    ReceiverID INT NOT NULL, 
+    Content TEXT NOT NULL, 
+    SentAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (SenderID) REFERENCES Users(UserID),
+    FOREIGN KEY (ReceiverID) REFERENCES Users(UserID)
+);
+
+INSERT INTO Roles (RoleName) VALUES ('Applicant'), ('HR');
+
